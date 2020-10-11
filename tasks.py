@@ -93,3 +93,27 @@ def build(ctx):
             generate_index_page(ctx, stagit_index, repos_dir)
 
     minify_html(ctx)
+
+
+def purge_cache() -> None:
+    """Purge cached resources from Cloudflare."""
+    token = os.environ["CLOUDFLARE_API_TOKEN"]
+    zone = os.environ["CLOUDFLARE_ZONE_ID"]
+    response = requests.post(
+        f"https://api.cloudflare.com/client/v4/zones/{zone}/purge_cache",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"purge_everything": True},
+    )
+    response.raise_for_status()
+
+
+@task(build, help={"prod": "Deploy to production."})
+def deploy(ctx, prod=False):
+    # type: (Context, bool) -> None
+    """Deploy the site."""
+    command = "netlify deploy"
+    if prod:
+        command += " --prod"
+    ctx.run(command)
+    if prod:
+        purge_cache()
