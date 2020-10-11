@@ -70,6 +70,11 @@ def generate_index_page(
         ctx.run(f"cp static/{filename} public")
 
 
+def minify_html(ctx: Context) -> None:
+    """Minify generated HTML."""
+    ctx.run("fd . public -e html -x htmlmin -c {} {}")
+
+
 @task
 def build(ctx):
     # type: (Context) -> None
@@ -86,3 +91,5 @@ def build(ctx):
                 clone_repo(ctx, repo, repos_dir)
                 generate_pages_for_repo(ctx, stagit, repos_dir, repo.name)
             generate_index_page(ctx, stagit_index, repos_dir)
+
+    minify_html(ctx)
