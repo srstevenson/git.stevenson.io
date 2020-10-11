@@ -13,6 +13,7 @@ class Repo(NamedTuple):
     name: str
     url: str
     desc: str
+    owner: str
 
 
 def create_output_dir():
@@ -30,10 +31,14 @@ def clone_and_build_stagit(ctx: Context, dest: str) -> None:
 
 def list_github_repos() -> List[Repo]:
     """List GitHub repositories."""
-    response = requests.get("https://api.github.com/users/srstevenson/repos")
+    response = requests.get("https://api.github.com/users/srstevenson")
+    response.raise_for_status()
+    body = response.json()
+    owner = body["name"]
+    response = requests.get(body["repos_url"])
     response.raise_for_status()
     return [
-        Repo(repo["name"], repo["clone_url"], repo["description"])
+        Repo(repo["name"], repo["clone_url"], repo["description"], owner)
         for repo in response.json()
     ]
 
@@ -43,8 +48,7 @@ def clone_repo(ctx: Context, repo: Repo, repos_dir: str) -> None:
     ctx.run(f"git clone {repo.url} {repos_dir}/{repo.name}")
     git_dir = pathlib.Path(repos_dir) / repo.name / ".git"
     for filename, content in zip(
-        ["description", "owner", "url"],
-        [repo.desc, "Scott Stevenson", repo.url],
+        ["description", "owner", "url"], [repo.desc, repo.owner, repo.url]
     ):
         (git_dir / filename).write_text(content)
 
