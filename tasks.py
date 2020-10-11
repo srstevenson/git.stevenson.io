@@ -72,7 +72,7 @@ def generate_index_page(
 
 def minify_html(ctx: Context) -> None:
     """Minify generated HTML."""
-    ctx.run("fd . public -e html -x htmlmin -c {} {}")
+    ctx.run(r"find public -name '*.html' -exec htmlmin -c {} {} \;")
 
 
 @task
