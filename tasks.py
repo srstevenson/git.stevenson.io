@@ -115,7 +115,7 @@ def purge_cache() -> None:
 def deploy(ctx, prod=False):
     # type: (Context, bool) -> None
     """Deploy the site."""
-    command = "netlify deploy"
+    command = "vercel --token $VERCEL_AUTH_TOKEN"
     if prod:
         command += " --prod"
     ctx.run(command)
