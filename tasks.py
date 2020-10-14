@@ -96,6 +96,7 @@ def build(ctx):
                 generate_pages_for_repo(ctx, stagit, repos_dir, repo.name)
             generate_index_page(ctx, stagit_index, repos_dir)
 
+    shutil.copy("static/404.html", "public")
     minify_html(ctx)
 
 
