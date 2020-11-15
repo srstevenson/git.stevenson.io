@@ -27,3 +27,8 @@ jobs:
           VERCEL_AUTH_TOKEN: ${{ secrets.VERCEL_AUTH_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Send heartbeat
+        run: curl -sSm 10 --retry 5 $HEARTBEAT_URL
+        env:
+          HEARTBEAT_URL: ${{ secrets.HEARTBEAT_URL }}
