@@ -11,11 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Synchronise apt package index files
-        run: sudo apt-get update -qq
-
       - name: Install dependencies
         run: |
+          sudo apt-get update -qq
           sudo apt-get install -qqy htmlmin libgit2-dev python3-invoke python3-requests
           sudo npm install -g vercel
 
