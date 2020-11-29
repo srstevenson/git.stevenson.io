@@ -1,15 +1,17 @@
+import dataclasses
 import os
 import pathlib
 import shutil
 import tempfile
-from typing import List, NamedTuple
+from typing import List
 
 import requests
 from invoke import task
 from invoke.context import Context
 
 
-class Repo(NamedTuple):
+@dataclasses.dataclass(frozen=True)
+class Repo:
     name: str
     url: str
     desc: str
