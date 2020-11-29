@@ -18,10 +18,8 @@ jobs:
           sudo npm install -g vercel
 
       - name: Build and deploy site
-        run: invoke deploy --echo --prod
+        run: invoke deploy --echo
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
           VERCEL_AUTH_TOKEN: ${{ secrets.VERCEL_AUTH_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

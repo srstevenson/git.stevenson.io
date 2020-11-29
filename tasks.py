@@ -74,11 +74,6 @@ def generate_index_page(
         ctx.run(f"cp static/{filename} public")
 
 
-def minify_html(ctx: Context) -> None:
-    """Minify generated HTML."""
-    ctx.run(r"find public -name '*.html' -exec htmlmin -c {} {} \;")
-
-
 @task
 def build(ctx):
     # type: (Context) -> None
@@ -97,28 +92,11 @@ def build(ctx):
             generate_index_page(ctx, stagit_index, repos_dir)
 
     shutil.copy("static/404.html", "public")
-    minify_html(ctx)
+    ctx.run(r"find public -name '*.html' -exec htmlmin -c {} {} \;")
 
 
-def purge_cache() -> None:
-    """Purge cached resources from Cloudflare."""
-    token = os.environ["CLOUDFLARE_API_TOKEN"]
-    zone = os.environ["CLOUDFLARE_ZONE_ID"]
-    response = requests.post(
-        f"https://api.cloudflare.com/client/v4/zones/{zone}/purge_cache",
-        headers={"Authorization": f"Bearer {token}"},
-        json={"purge_everything": True},
-    )
-    response.raise_for_status()
-
-
-@task(build, help={"prod": "Deploy to production."})
-def deploy(ctx, prod=False):
-    # type: (Context, bool) -> None
+@task(build)
+def deploy(ctx):
+    # type: (Context) -> None
     """Deploy the site."""
-    command = "vercel --token $VERCEL_AUTH_TOKEN"
-    if prod:
-        command += " --prod"
-    ctx.run(command)
-    if prod:
-        purge_cache()
+    ctx.run("vercel --token $VERCEL_AUTH_TOKEN --prod")
